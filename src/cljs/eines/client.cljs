@@ -64,7 +64,8 @@
   (let [response-id (-> message :headers :eines/rsvp-response-id)]
     (swap! state update-in [:rsvp :requests]
            (fn [requests]
-             (if-let [response-fn (-> requests (get response-id) :response-fn)]
+             (when-let [{:keys [response-fn timeout]} (get requests response-id)]
+               (js/clearTimeout timeout)
                (response-fn message))
              (dissoc requests response-id)))))
 
