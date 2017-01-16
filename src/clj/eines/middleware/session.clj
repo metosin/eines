@@ -4,6 +4,7 @@
 (defn wrap-session [handler]
   (fn [message]
     (let [response (handler message)]
-      (when-let [session (-> response :session)]
-        (swap! c/sockets update (-> message :eines/state :ch) assoc :session session))
-      response)))
+      (if-let [session (-> response :session)]
+        (do (swap! c/sockets update (-> message :eines/state :ch) assoc :session session)
+            (dissoc response :session))
+        response))))
