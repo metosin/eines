@@ -13,12 +13,12 @@
             [eines.middleware.session :as session]
             [eines-example.message.handler :as handler]))
 
-(def handler (-> handler/handle-message
-                 (rsvp/wrap-rsvp)
-                 (session/wrap-session)))
+(def message-handler (-> handler/handle-message
+                         (rsvp/wrap-rsvp)
+                         (session/wrap-session)))
 
 (defn create-handler []
-  (some-fn (-> (eines/handler-context handler)
+  (some-fn (-> (eines/handler-context message-handler)
                (eines-immutant/create-handler)
                (wrap-params))
            (-> (static/create-handler)

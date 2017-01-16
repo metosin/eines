@@ -11,20 +11,12 @@ for [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) comm
 
 ## Todo
 
-[ ] Backend middleware
-[ ] Backend session middleware
-[ ] Message format support
-[ ] JSON
-[ ] EDN
 [ ] Write proper documentation
 [ ] API docs
 [ ] Compare to other libs
 [ ] Symmetric RPC support
 [ ] Better state machine for front
-[ ] Abstract app state away in front
-[ ] Isolate http server specific code in backend
 [ ] Support for HttpKit
-[ ] Separate common, clj, and cljs libs
 [ ] Release
 
 ## License
