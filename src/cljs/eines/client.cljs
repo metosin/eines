@@ -83,10 +83,9 @@
                                           :timeout (set-timeout request-id timeout)}))))
 
 (defn rsvp-request-id [response-fn timeout]
-  (if response-fn
-    (-> (swap! state update :rsvp push-rsvp response-fn timeout)
-        :rsvp
-        :request-id)))
+  (-> (swap! state update :rsvp push-rsvp response-fn timeout)
+      :rsvp
+      :request-id))
 
 (defn send!
   ([message] (send! message nil nil))
