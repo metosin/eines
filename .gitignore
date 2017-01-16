@@ -1,0 +1,8 @@
+/target
+/checkouts
+pom.xml
+pom.xml.asc
+/.lein-*
+/.nrepl-*
+/*.iml
+/.idea
