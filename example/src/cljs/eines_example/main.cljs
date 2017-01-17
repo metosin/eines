@@ -47,21 +47,26 @@
          [:span "Server response:"]
          [:span mood-response]])]]))
 
+(defmulti on-message (comp :type :body))
+
+(defmethod on-message :default [message]
+  (js/console.warn "unknown message:" message))
+
+(defmethod on-message :greetings [message]
+  (js/console.log "Server sent greetings:" (-> message :body :greetings))
+  {:body "Thanks for asking, I'm fine"})
+
 (defn main []
-  (ws/init! {:on-message (fn [message]
-                           (js/console.log "message:" message))
+  (ws/init! {:on-message on-message
              :on-connect (fn []
-                           (js/console.log "connected")
                            (swap! app-state assoc :connected? true)
                            (ws/send! {:type :login
-                                      :user "number 6"
-                                      :password "secret"}))
+                                      :user "user"
+                                      :password "password"}))
              :on-close (fn []
-                         (swap! app-state assoc :connected? false)
-                         (js/console.log "closed"))
+                         (swap! app-state assoc :connected? false))
              :on-error (fn []
-                         (swap! app-state assoc :connected? false)
-                         (js/console.log "error"))})
+                         (swap! app-state assoc :connected? false))})
   (r/render [main-view] (.getElementById js/document "app")))
 
 (main)
