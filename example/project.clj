@@ -1,4 +1,4 @@
-(defproject eines-example "0.0.0-SNAPSHOT"
+(defproject metosin/eines-example "0.0.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.293" :exclusions [com.google.code.findbugs/jsr305]]
 
@@ -6,7 +6,7 @@
                  [org.clojure/tools.namespace "0.3.0-alpha3"]
 
                  ;; Eines:
-                 [eines "0.0.2-SNAPSHOT"]
+                 [metosin/eines "0.0.2"]
 
                  ;; Server:
                  [mount "0.1.11"]
