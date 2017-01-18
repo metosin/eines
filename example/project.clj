@@ -49,7 +49,8 @@
          :output-style :compressed}
 
   :figwheel {:css-dirs ["target/dev/resources/public/css"]
-             :repl false}
+             :repl false
+             :server-port 3452}
 
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljc" "src/cljs" "../src/cljc" "../src/cljs"]
