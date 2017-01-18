@@ -24,15 +24,14 @@
            (index/create-handler)
            (constantly (response/not-found "Not found"))))
 
-(defn start-server []
-  (log/infof "Starting HTTP server...")
-  (immutant/run (create-handler) {:port 3030
-                                  :path "/"}))
+(defn start-server [config]
+  (log/infof "Starting HTTP server, listening port %d..." (:port config))
+  (immutant/run (create-handler) config))
 
 (defn stop-server [server]
   (log/info "Stopping HTTP server...")
   (immutant/stop server))
 
 (mount/defstate server
-  :start (start-server)
+  :start (start-server {:port 3030, :path "/"})
   :stop (stop-server server))

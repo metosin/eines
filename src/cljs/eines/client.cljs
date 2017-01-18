@@ -26,8 +26,7 @@
   ([message response-fn] (send! message response-fn 5000))
   ([message response-fn timeout]
    (when-let [socket (:socket @i/state)]
-     (let [message {:type :eines.type/request
-                    :body message}
+     (let [message (assoc message :type :eines.type/request)
            message (if response-fn
                      (assoc-in message [:headers :eines/rsvp-request-id] (i/rsvp-request-id response-fn timeout))
                      message)]

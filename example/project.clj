@@ -6,7 +6,7 @@
                  [org.clojure/tools.namespace "0.3.0-alpha3"]
 
                  ;; Eines:
-                 [metosin/eines "0.0.2"]
+                 [metosin/eines "0.0.3"]
 
                  ;; Server:
                  [mount "0.1.11"]
@@ -49,7 +49,8 @@
          :output-style :compressed}
 
   :figwheel {:css-dirs ["target/dev/resources/public/css"]
-             :repl false}
+             :repl false
+             :server-port 3452}
 
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljc" "src/cljs" "../src/cljc" "../src/cljs"]
@@ -61,9 +62,7 @@
                                    :source-map-timestamp true
                                    :closure-defines {goog.DEBUG true}
                                    :preloads [devtools.preload]
-                                   :external-config {:devtools/config
-                                                     {:features-to-install
-                                                      [:formatters :hints]}}}}
+                                   :external-config {:devtools/config {:features-to-install [:formatters :hints]}}}}
                        {:id "prod"
                         :source-paths ["src/cljc" "src/cljs"]
                         :compiler {:main eines-example.main
