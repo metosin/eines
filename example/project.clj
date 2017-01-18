@@ -62,9 +62,7 @@
                                    :source-map-timestamp true
                                    :closure-defines {goog.DEBUG true}
                                    :preloads [devtools.preload]
-                                   :external-config {:devtools/config
-                                                     {:features-to-install
-                                                      [:formatters :hints]}}}}
+                                   :external-config {:devtools/config {:features-to-install [:formatters :hints]}}}}
                        {:id "prod"
                         :source-paths ["src/cljc" "src/cljs"]
                         :compiler {:main eines-example.main
