@@ -1,6 +1,6 @@
 (ns eines-example.main
   (:require [reagent.core :as r]
-            [eines.client :as ws]
+            [eines.client :as eines]
             [clojure.string :as str]))
 
 (defonce app-state (r/atom {}))
@@ -14,8 +14,8 @@
       [:span (if connected? "Connected" "Connecting...")]]
      [:form {:on-submit (fn [e]
                           (.preventDefault e)
-                          (ws/send! {:type :favorite
-                                     :favorite favorite}))}
+                          (eines/send! {:body {:type :favorite
+                                               :favorite favorite}}))}
       [:h2 "Favourite eines"]
       [:input {:type "text"
                :placeholder "Your favorite eines?"
@@ -27,12 +27,12 @@
        "Send"]]
      [:form {:on-submit (fn [e]
                           (.preventDefault e)
-                          (ws/send! {:type :mood
-                                     :mood mood}
-                                    (fn [response]
-                                      (if (ws/success? response)
-                                        (swap! app-state assoc :mood-response (:body response))
-                                        (js/console.log "fail:" (pr-str response))))))}
+                          (eines/send! {:body {:type :mood
+                                               :mood mood}}
+                                       (fn [response]
+                                         (if (eines/success? response)
+                                           (swap! app-state assoc :mood-response (:body response))
+                                           (js/console.log "fail:" (pr-str response))))))}
       [:h2 "Your mood"]
       [:input {:type "text"
                :placeholder "Your mood?"
@@ -57,16 +57,16 @@
   {:body "Thanks for asking, I'm fine"})
 
 (defn main []
-  (ws/init! {:on-message on-message
-             :on-connect (fn []
-                           (swap! app-state assoc :connected? true)
-                           (ws/send! {:type :login
-                                      :user "user"
-                                      :password "password"}))
-             :on-close (fn []
-                         (swap! app-state assoc :connected? false))
-             :on-error (fn []
-                         (swap! app-state assoc :connected? false))})
+  (eines/init! {:on-message on-message
+                :on-connect (fn []
+                              (swap! app-state assoc :connected? true)
+                              (eines/send! {:body {:type :login
+                                                   :user "user"
+                                                   :password "password"}}))
+                :on-close (fn []
+                            (swap! app-state assoc :connected? false))
+                :on-error (fn []
+                            (swap! app-state assoc :connected? false))})
   (r/render [main-view] (.getElementById js/document "app")))
 
 (main)
