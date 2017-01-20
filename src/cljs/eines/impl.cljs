@@ -80,13 +80,18 @@
   (if-let [socket (:socket @state)]
     (.send socket (pack {:type :eines.type/ping}))))
 
+(defn clear-state [{:keys [socket interval] :as state}]
+  (when socket
+    (.close socket))
+  (when interval
+    (js/clearInterval interval))
+  state)
+
 (defn set-socket! [state new-socket interval-fn interval-ms]
-  (when-let [prev-interval (:interval state)]
-    (js/clearInterval prev-interval))
-  (when-let [old-socket (:socket state)]
-    (.close old-socket))
-  (assoc state :socket new-socket
-               :interval (js/setInterval interval-fn interval-ms)))
+  (-> state
+      (clear-state)
+      (assoc :socket new-socket
+             :interval (js/setInterval interval-fn interval-ms))))
 
 (defn make-url [url format]
   (str url "?format=" (js/encodeURIComponent (name format))))
@@ -105,3 +110,11 @@
                                (on-error)))
     (set! (.-onmessage socket) (fn [e]
                                  (handle-message e socket on-message)))))
+
+;;
+;; Reset state:
+;;
+
+(defn reset-state [prev-state new-state]
+  (clear-state prev-state)
+  new-state)

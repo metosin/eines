@@ -3,13 +3,13 @@
             [immutant.web.async :as async]
             [eines.pack.transit :as transit]))
 
-(defn create-handler [{:keys [on-message add-socket remove-socket]}]
+(defn create-handler [{:keys [on-open on-close on-message]}]
   (fn [{:keys [websocket? uri] :as request}]
     (when (and websocket? (= uri "/ws"))
       (async/as-channel request {:on-open (fn [ch]
-                                            (add-socket ch request async/send!))
+                                            (on-open ch request async/send!))
                                  :on-close (fn [ch _]
-                                             (remove-socket ch))
+                                             (on-close ch))
                                  :on-error (fn [ch e]
                                              (log/error e "on-error")
                                              (async/close ch))

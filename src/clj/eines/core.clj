@@ -16,26 +16,30 @@
                           keyword
                           (or :transit+json)
                           packers
-                          (or (throw (ex-info "unknown format" {}))))
-        send! (fn [message & [response-fn timeout]]
-                (->> (if response-fn
-                       (assoc-in message [:headers :eines/rsvp] {:response-fn response-fn
-                                                                 :timeout (or timeout 5000)})
-                       message)
-                     (out-middleware)
-                     (pack)
-                     (send-fn ch)))]
+                          (or (throw (ex-info "unknown format" {}))))]
     {:eines/state {:ch ch
                    :pack pack
                    :unpack unpack
                    :send-fn send-fn}
-     :send! send!
-     :opened (System/currentTimeMillis)}))
+     :opened (System/currentTimeMillis)
+     :send! (fn [message & [response-fn timeout]]
+              (let [message (cond-> message
+                                    (nil? (:type message)) (assoc :type :eines.type/request)
+                                    response-fn (assoc-in [:headers :eines/rsvp] {:response-fn response-fn
+                                                                                  :timeout (or timeout 5000)}))]
+                (->> message
+                     (out-middleware)
+                     (pack)
+                     (send-fn ch))))}))
 
-(defn add-socket [out-middleware ch request send-fn]
-  (swap! sockets assoc ch (init-state ch request send-fn out-middleware)))
+(defn on-open [out-middleware on-open-listener ch request send-fn]
+  (swap! sockets assoc ch (init-state ch request send-fn out-middleware))
+  (on-open-listener ch))
 
-(defn remove-socket [ch]
+(defn on-close [on-close-listener ch]
+  (doseq [on-close (-> @sockets (get ch) :on-closes vals)]
+    (on-close))
+  (on-close-listener ch)
   (swap! sockets dissoc ch))
 
 (defn send-pong [state]
@@ -69,18 +73,17 @@
                   (middleware acc)))
                on-message)))
 
-(defn handler-context [on-message & [{:keys [middlewares]}]]
-  {:on-message (partial handle-inbound-message (make-inbound-handler middlewares on-message))
-   :add-socket (partial add-socket (make-outbound-handler middlewares))
-   :remove-socket remove-socket})
+(defn handler-context [on-message & [opts]]
+  {:on-message (partial handle-inbound-message (make-inbound-handler (:middlewares opts) on-message))
+   :on-open (partial on-open (make-outbound-handler (:middlewares opts)) (:on-open opts identity))
+   :on-close (partial on-close (:on-close opts identity))})
 
 (comment
 
   (-> @sockets count)
 
   (doseq [{:keys [send!]} (-> @sockets vals)]
-    (send! {:type :eines.type/request
-            :body {:type :greetings
+    (send! {:body {:type :greetings
                    :greetings "Whassup?"}}
            (fn [response]
              (println "Client response:" (pr-str (:body response))))))
