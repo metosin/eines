@@ -6,7 +6,7 @@
                  [org.clojure/tools.namespace "0.3.0-alpha3"]
 
                  ;; Eines:
-                 [metosin/eines "0.0.4-SNAPSHOT"]
+                 [metosin/eines "0.0.5-SNAPSHOT"]
 
                  ;; Server:
                  [mount "0.1.11"]
