@@ -25,19 +25,20 @@
   ([message] (send! message nil nil))
   ([message response-fn] (send! message response-fn 5000))
   ([message response-fn timeout]
-   (when-let [socket (:socket @i/state)]
+   (if-let [socket (:socket @i/state)]
      (let [message (assoc message :type :eines.type/request)
            message (if response-fn
                      (assoc-in message [:headers :eines/rsvp-request-id] (i/rsvp-request-id response-fn timeout))
                      message)]
-       (.send socket (i/pack message))))))
+       (.send socket (i/pack message)))
+     (js/console.error "eines.client/send!: socket is closed"))))
 
 ;;
 ;; Init WebSocket:
 ;;
 
 (defn init! [opts]
-  (reset! i/state (merge default-options opts))
+  (swap! i/state i/reset-state (merge default-options opts))
   (i/connect!))
 
 ;;
