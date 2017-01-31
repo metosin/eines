@@ -28,13 +28,15 @@
 ;;
 
 (defn rsvp-response [message]
-  (let [response-id (-> message :headers :eines/rsvp-response-id)]
+  (let [response-id (-> message :headers :eines/rsvp-response-id)
+        response-fn (-> @state :rsvp :requests (get response-id) :response-fn)]
     (swap! state update-in [:rsvp :requests]
            (fn [requests]
-             (when-let [{:keys [response-fn timeout]} (get requests response-id)]
-               (js/clearTimeout timeout)
-               (response-fn message))
-             (dissoc requests response-id)))))
+             (when-let [{:keys [timeout]} (get requests response-id)]
+               (js/clearTimeout timeout))
+             (dissoc requests response-id)))
+    (when response-fn
+      (response-fn message))))
 
 (defn set-timeout [request-id timeout]
   (js/setTimeout
