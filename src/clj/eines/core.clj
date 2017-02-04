@@ -52,7 +52,9 @@
     (case (:type message)
       :eines.type/ping (send-pong state)
       :eines.type/pong nil
-      (:eines.type/request :eines.type/response) (on-message (merge message state)))))
+      (:eines.type/request :eines.type/response) (on-message (-> message
+                                                                 (merge state)
+                                                                 (assoc :ch ch))))))
 
 (defn make-outbound-handler [middlewares]
   (->> middlewares
