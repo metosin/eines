@@ -1,4 +1,4 @@
-(defproject metosin/eines "0.0.6"
+(defproject metosin/eines "0.0.7-SNAPSHOT"
   :description "Simple clj/cljs library for WebSocket communication"
   :url "https://github.com/metosin/eines"
   :license {:name "Eclipse Public License", :url "http://www.eclipse.org/legal/epl-v10.html"}
