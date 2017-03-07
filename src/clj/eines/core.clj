@@ -17,7 +17,8 @@
                           (or :transit+json)
                           packers
                           (or (throw (ex-info "unknown format" {}))))]
-    {:eines/state {:ch ch
+    {:eines/request-headers (:headers request)
+     :eines/state {:ch ch
                    :pack pack
                    :unpack unpack
                    :send-fn send-fn}
