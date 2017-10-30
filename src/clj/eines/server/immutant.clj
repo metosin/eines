@@ -14,5 +14,4 @@
                                              (log/error e "on-error")
                                              (async/close ch))
                                  :on-message (fn [ch message]
-                                               (on-message ch message))
-                                 :timeout 15000}))))
+                                               (on-message ch message))}))))
