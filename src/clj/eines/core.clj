@@ -23,15 +23,20 @@
                    :unpack unpack
                    :send-fn send-fn}
      :opened (System/currentTimeMillis)
-     :send! (fn [message & [response-fn timeout]]
-              (let [message (cond-> message
-                                    (nil? (:type message)) (assoc :type :eines.type/request)
-                                    response-fn (assoc-in [:headers :eines/rsvp] {:response-fn response-fn
-                                                                                  :timeout (or timeout 5000)}))]
-                (->> message
-                     (out-middleware)
-                     (pack)
-                     (send-fn ch))))}))
+     :send! (fn send!
+              ([message]
+               (send! message nil nil))
+              ([message response-fn]
+               (send! message response-fn nil))
+              ([message response-fn timeout]
+               (let [message (cond-> message
+                               (nil? (:type message)) (assoc :type :eines.type/request)
+                               response-fn (assoc-in [:headers :eines/rsvp] {:response-fn response-fn
+                                                                             :timeout (or timeout 5000)}))]
+                 (->> message
+                      (out-middleware)
+                      (pack)
+                      (send-fn ch)))))}))
 
 (defn on-open [out-middleware on-open-listener ch request send-fn]
   (swap! sockets assoc ch (init-state ch request send-fn out-middleware))
@@ -76,10 +81,17 @@
                   (middleware acc)))
                on-message)))
 
-(defn handler-context [on-message & [opts]]
-  {:on-message (partial handle-inbound-message (make-inbound-handler (:middlewares opts) on-message))
-   :on-open (partial on-open (make-outbound-handler (:middlewares opts)) (:on-open opts identity))
-   :on-close (partial on-close (:on-close opts identity))})
+(defn handler-context
+  "Options:
+  - :middlewares
+  - :on-open
+  - :on-close"
+  ([on-message]
+   (handler-context on-message nil))
+  ([on-message opts]
+   {:on-message (partial handle-inbound-message (make-inbound-handler (:middlewares opts) on-message))
+    :on-open (partial on-open (make-outbound-handler (:middlewares opts)) (:on-open opts identity))
+    :on-close (partial on-close (:on-close opts identity))}))
 
 (comment
 
