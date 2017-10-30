@@ -15,13 +15,13 @@
 ;; Message pack & unpack with transit:
 ;;
 
-(defn create-packer [{:keys [writer]}]
-  (let [writer (t/writer :json writer)]
+(defn create-packer [opts]
+  (let [writer (t/writer :json opts)]
     (fn [message]
       (t/write writer message))))
 
-(defn create-unpacker [{:keys [reader]}]
-  (let [reader (t/reader :json reader)]
+(defn create-unpacker [opts]
+  (let [reader (t/reader :json opts)]
     (fn [message]
       (t/read reader message))))
 
