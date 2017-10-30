@@ -41,7 +41,7 @@
                         (pack)
                         (send-fn ch)))))})))
 
-(defn on-open [out-middleware on-open-listener ch request send-fn opts]
+(defn on-open [out-middleware on-open-listener opts ch request send-fn]
   (swap! sockets assoc ch (init-state ch request send-fn out-middleware opts))
   (on-open-listener ch))
 
