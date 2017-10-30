@@ -65,8 +65,8 @@
                                                                  (merge state)
                                                                  (assoc :ch ch))))))
 
-(defn make-outbound-handler [middlewares]
-  (->> middlewares
+(defn make-outbound-handler [middleware]
+  (->> middleware
        (keep :out)
        (reduce (fn
                  ([] identity)
@@ -74,8 +74,8 @@
                   (middleware acc)))
                identity)))
 
-(defn make-inbound-handler [middlewares on-message]
-  (->> middlewares
+(defn make-inbound-handler [middleware on-message]
+  (->> middleware
        (keep :in)
        (reverse)
        (reduce (fn
@@ -86,14 +86,14 @@
 
 (defn handler-context
   "Options:
-  - :middlewares
+  - :middleware
   - :on-open
   - :on-close"
   ([on-message]
    (handler-context on-message nil))
-  ([on-message opts]
-   {:on-message (partial handle-inbound-message (make-inbound-handler (:middlewares opts) on-message))
-    :on-open (partial on-open (make-outbound-handler (:middlewares opts)) (:on-open opts identity) opts)
+  ([on-message {:keys [middleware] :as opts}]
+   {:on-message (partial handle-inbound-message (make-inbound-handler middleware on-message))
+    :on-open (partial on-open (make-outbound-handler middleware) (:on-open opts identity) opts)
     :on-close (partial on-close (:on-close opts identity))}))
 
 (comment
