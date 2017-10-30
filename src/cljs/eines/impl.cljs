@@ -6,6 +6,8 @@
 ;;
 
 (defonce state (atom {:socket nil
+                      :pack nil
+                      :unpack nil
                       :rsvp {:request-id 0
                              :requests {}}}))
 
@@ -13,13 +15,13 @@
 ;; Message pack & unpack with transit:
 ;;
 
-(def pack
-  (let [writer (t/writer :json)]
+(defn create-packer [{:keys [writer]}]
+  (let [writer (t/writer :json writer)]
     (fn [message]
       (t/write writer message))))
 
-(def unpack
-  (let [reader (t/reader :json)]
+(defn create-unpacker [{:keys [reader]}]
+  (let [reader (t/reader :json reader)]
     (fn [message]
       (t/read reader message))))
 
@@ -63,14 +65,16 @@
 (defn deliver [message on-message]
   (let [response (on-message message)]
     (if-let [rsvp-request-id (-> message :headers :eines/rsvp-request-id)]
-      (if-let [socket (:socket @state)]
-        (.send socket (-> response
-                          (assoc-in [:headers :eines/rsvp-response-id] rsvp-request-id)
-                          (assoc :type :eines.type/response)
-                          (pack)))))))
+      (let [{:keys [socket pack]} @state]
+        (if socket
+          (.send socket (-> response
+                            (assoc-in [:headers :eines/rsvp-response-id] rsvp-request-id)
+                            (assoc :type :eines.type/response)
+                            (pack))))))))
 
 (defn handle-message [e socket on-message]
-  (let [message (->> e .-data unpack)]
+  (let [{:keys [pack unpack]} @state
+        message (->> e .-data unpack)]
     (case (:type message)
       :eines.type/pong nil
       :eines.type/ping (.send socket (pack {:type :eines.type/pong}))
@@ -79,8 +83,9 @@
     nil))
 
 (defn ping! []
-  (if-let [socket (:socket @state)]
-    (.send socket (pack {:type :eines.type/ping}))))
+  (let [{:keys [socket pack]} @state]
+    (if socket
+      (.send socket (pack {:type :eines.type/ping})))))
 
 (defn clear-state [{:keys [socket interval] :as state}]
   (when socket
