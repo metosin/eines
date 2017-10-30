@@ -104,10 +104,10 @@
   (str url "?format=" (js/encodeURIComponent (name format))))
 
 (defn connect! []
-  (let [{:keys [url format on-message on-connect on-close on-error]} @state
+  (let [{:keys [url format on-message on-connect on-close on-error ping-interval]} @state
         socket (js/WebSocket. (make-url url format))]
     (set! (.-onopen socket) (fn [_]
-                              (swap! state set-socket! socket ping! 1000)
+                              (swap! state set-socket! socket ping! (or ping-interval 1000))
                               (on-connect)))
     (set! (.-onclose socket) (fn [_]
                                (swap! state set-socket! nil connect! 5000)
