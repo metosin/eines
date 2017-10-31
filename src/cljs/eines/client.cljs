@@ -33,8 +33,8 @@
              message (if response-fn
                        (assoc-in message [:headers :eines/rsvp-request-id] (i/rsvp-request-id response-fn timeout))
                        message)]
-         (.send socket (pack message))))
-     (js/console.error "eines.client/send!: socket is closed"))))
+         (.send socket (pack message)))
+       (js/console.error "eines.client/send!: socket is closed")))))
 
 ;;
 ;; Init WebSocket:
