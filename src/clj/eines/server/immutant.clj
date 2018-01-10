@@ -1,7 +1,7 @@
 (ns eines.server.immutant
   (:require [clojure.tools.logging :as log]
-            [immutant.web.async :as async]
-            [eines.pack.transit :as transit]))
+            [immutant.web.async :as async])
+  (:import (io.undertow.server HttpServerExchange)))
 
 (defn create-handler [{:keys [on-open on-close on-message]}]
   (fn [{:keys [websocket? uri] :as request}]
@@ -13,5 +13,8 @@
                                  :on-error (fn [ch e]
                                              (log/error e "on-error")
                                              (async/close ch))
-                                 :on-message (fn [ch message]
-                                               (on-message ch message))}))))
+                                 :on-message (let [^HttpServerExchange exchange (-> request :server-exchange)]
+                                               (fn [ch message]
+                                                 (if (.isInIoThread exchange)
+                                                   (.dispatch exchange ^Runnable ^:once (fn [] (on-message ch message)))
+                                                   (on-message ch message))))}))))
