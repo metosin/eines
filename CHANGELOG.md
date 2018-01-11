@@ -1,5 +1,6 @@
 # UNRELEASED
 
+* Under Immutant, the eines handlers are run on worker-thead-pool, not on io-thread-pool.
 * **BREAKING**: `:middlewares` is now `:middleware`
 * support transit read & write handlers in both frontend & backend:
 
