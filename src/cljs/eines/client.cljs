@@ -51,4 +51,4 @@
   (-> message :type (= :eines.type/timeout)))
 
 (defn success? [message]
-  (-> message :type #{:eines.type/response :eines.type/request}))
+  (-> message :type #{:eines.type/response :eines.type/request} boolean))
