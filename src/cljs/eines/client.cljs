@@ -22,8 +22,10 @@
 ;;
 
 (defn send!
-  ([message] (send! message nil nil))
-  ([message response-fn] (send! message response-fn 5000))
+  ([message]
+   (send! message nil nil))
+  ([message response-fn]
+   (send! message response-fn 5000))
   ([message response-fn timeout]
    (if-let [socket (:socket @i/state)]
      (let [message (assoc message :type :eines.type/request)
