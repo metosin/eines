@@ -5,41 +5,44 @@
 
 (def sockets (atom {}))
 
-(def packers {:transit+json [transit/pack transit/unpack]
-              :json [json/pack json/unpack]
-              :edn [edn/pack edn/unpack]})
+(defn create-packers [{:keys [transit]}]
+  {:transit+json [(transit/create-packer transit)
+                  (transit/create-unpacker transit)]
+   :json [json/pack json/unpack]
+   :edn [edn/pack edn/unpack]})
 
-(defn init-state [ch request send-fn out-middleware]
-  (let [[pack unpack] (-> request
-                          :params
-                          (get "format")
-                          keyword
-                          (or :transit+json)
-                          packers
-                          (or (throw (ex-info "unknown format" {}))))]
-    {:eines/request-headers (:headers request)
-     :eines/state {:ch ch
-                   :pack pack
-                   :unpack unpack
-                   :send-fn send-fn}
-     :opened (System/currentTimeMillis)
-     :send! (fn send!
-              ([message]
-               (send! message nil nil))
-              ([message response-fn]
-               (send! message response-fn nil))
-              ([message response-fn timeout]
-               (let [message (cond-> message
-                               (nil? (:type message)) (assoc :type :eines.type/request)
-                               response-fn (assoc-in [:headers :eines/rsvp] {:response-fn response-fn
-                                                                             :timeout (or timeout 5000)}))]
-                 (->> message
-                      (out-middleware)
-                      (pack)
-                      (send-fn ch)))))}))
+(defn init-state [ch request send-fn out-middleware opts]
+  (let [packers (create-packers opts)]
+    (let [[pack unpack] (-> request
+                            :params
+                            (get "format")
+                            keyword
+                            (or :transit+json)
+                            packers
+                            (or (throw (ex-info "unknown format" {}))))]
+      {:eines/request-headers (:headers request)
+       :eines/state {:ch ch
+                     :pack pack
+                     :unpack unpack
+                     :send-fn send-fn}
+       :opened (System/currentTimeMillis)
+       :send! (fn send!
+                ([message]
+                 (send! message nil nil))
+                ([message response-fn]
+                 (send! message response-fn nil))
+                ([message response-fn timeout]
+                 (let [message (cond-> message
+                                       (nil? (:type message)) (assoc :type :eines.type/request)
+                                       response-fn (assoc-in [:headers :eines/rsvp] {:response-fn response-fn
+                                                                                     :timeout (or timeout 5000)}))]
+                   (->> message
+                        (out-middleware)
+                        (pack)
+                        (send-fn ch)))))})))
 
-(defn on-open [out-middleware on-open-listener ch request send-fn]
-  (swap! sockets assoc ch (init-state ch request send-fn out-middleware))
+(defn on-open [out-middleware on-open-listener opts ch request send-fn]
+  (swap! sockets assoc ch (init-state ch request send-fn out-middleware opts))
   (on-open-listener ch))
 
 (defn on-close [on-close-listener ch]
@@ -62,8 +65,8 @@
                                                                  (merge state)
                                                                  (assoc :ch ch))))))
 
-(defn make-outbound-handler [middlewares]
-  (->> middlewares
+(defn make-outbound-handler [middleware]
+  (->> middleware
        (keep :out)
        (reduce (fn
                  ([] identity)
@@ -71,8 +74,8 @@
                   (middleware acc)))
                identity)))
 
-(defn make-inbound-handler [middlewares on-message]
-  (->> middlewares
+(defn make-inbound-handler [middleware on-message]
+  (->> middleware
        (keep :in)
        (reverse)
        (reduce (fn
@@ -83,14 +86,14 @@
 
 (defn handler-context
   "Options:
-  - :middlewares
+  - :middleware
   - :on-open
   - :on-close"
   ([on-message]
    (handler-context on-message nil))
-  ([on-message opts]
-   {:on-message (partial handle-inbound-message (make-inbound-handler (:middlewares opts) on-message))
-    :on-open (partial on-open (make-outbound-handler (:middlewares opts)) (:on-open opts identity))
+  ([on-message {:keys [middleware] :as opts}]
+   {:on-message (partial handle-inbound-message (make-inbound-handler middleware on-message))
+    :on-open (partial on-open (make-outbound-handler middleware) (:on-open opts identity) opts)
     :on-close (partial on-close (:on-close opts identity))}))
 
 (comment
@@ -101,6 +104,4 @@
     (send! {:body {:type :greetings
                    :greetings "Whassup?"}}
            (fn [response]
-             (println "Client response:" (pr-str (:body response))))))
-
-  )
+             (println "Client response:" (pr-str (:body response)))))))

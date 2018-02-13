@@ -15,8 +15,8 @@
 
 (defn create-handler []
   (some-fn (-> (eines/handler-context handler/handle-message
-                                      {:middlewares [(session/session-middleware)
-                                                     (rsvp/rsvp-middleware)]})
+                                      {:middleware [(session/session-middleware)
+                                                    (rsvp/rsvp-middleware)]})
                (eines-immutant/create-handler)
                (wrap-params))
            (-> (static/create-handler)
