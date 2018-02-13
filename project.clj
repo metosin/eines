@@ -10,13 +10,12 @@
                  [com.cognitect/transit-clj "0.8.300"]
                  [cheshire "5.8.0"]
                  ; Optionals
-                 [org.immutant/web "2.1.9" :scope "provided"]]
+                 [org.immutant/web "2.1.10" :scope "provided"]]
 
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.8.0"]
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0"]
                                   [org.clojure/clojurescript "1.9.946" :exclusions [com.google.code.findbugs/jsr305]]
-                                  [org.immutant/web "2.1.9"]]}}
-
-  :global-vars {*warn-on-reflection* true}
+                                  [org.immutant/web "2.1.10"]]
+                   :global-vars {*warn-on-reflection* true}}}
 
   :source-paths ["src/clj" "src/cljc" "src/cljs"]
   :test-paths ["test/clj" "test/cljc"])
