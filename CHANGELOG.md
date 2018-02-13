@@ -1,4 +1,4 @@
-# UNRELEASED
+# 0.0.9
 
 * Updated deps to most recent versions
 * **BREAKING**: `:middlewares` is now `:middleware`
