@@ -1,6 +1,6 @@
 (defproject metosin/eines-example "0.0.0-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.293" :exclusions [com.google.code.findbugs/jsr305]]
+  :dependencies [[org.clojure/clojure "1.9.0"]
+                 [org.clojure/clojurescript "1.9.946"]
 
                  ;; Work flow:
                  [org.clojure/tools.namespace "0.3.0-alpha3"]
@@ -9,34 +9,33 @@
                  [metosin/eines "0.0.8-SNAPSHOT"]
 
                  ;; Server:
-                 [mount "0.1.11"]
-                 [prismatic/plumbing "0.5.3"]
-                 [org.immutant/web "2.1.6"]
+                 [mount "0.1.12"]
+                 [prismatic/plumbing "0.5.5"]
+                 [org.immutant/web "2.1.10"]
 
                  ;; Client:
-                 [reagent "0.6.0"]
-
+                 [reagent "0.7.0"]
 
                  ;; Logging:
-                 [org.clojure/tools.logging "0.3.1"]
-                 [org.slf4j/jcl-over-slf4j "1.7.22"]
-                 [org.slf4j/jul-to-slf4j "1.7.22"]
-                 [org.slf4j/log4j-over-slf4j "1.7.22"]
-                 [ch.qos.logback/logback-classic "1.1.8" :exclusions [org.slf4j/slf4j-api]]
+                 [org.clojure/tools.logging "0.4.0"]
+                 [org.slf4j/jcl-over-slf4j "1.7.25"]
+                 [org.slf4j/jul-to-slf4j "1.7.25"]
+                 [org.slf4j/log4j-over-slf4j "1.7.25"]
+                 [ch.qos.logback/logback-classic "1.2.3" :exclusions [org.slf4j/slf4j-api]]
 
                  ;; Frontend development
-                 [binaryage/devtools "0.8.3"]]
+                 [binaryage/devtools "0.9.9"]]
 
   :source-paths ["src/clj" "src/cljc"]
   :test-paths ["test/clj" "test/cljc"]
 
   :plugins [[lein-pdo "0.1.1"]
-            [deraen/lein-sass4clj "0.3.0"]
-            [lein-cljsbuild "1.1.4"]]
+            [deraen/lein-sass4clj "0.3.1"]
+            [lein-cljsbuild "1.1.7"]
+            [lein-figwheel "0.5.14" :exclusions [org.clojure/clojure]]]
 
   :profiles {:dev {:resource-paths ["target/dev/resources"]
-                   :sass {:target-path "target/dev/resources/public/css"}
-                   :plugins [[lein-figwheel "0.5.8" :exclusions [org.clojure/clojure]]]}
+                   :sass {:target-path "target/dev/resources/public/css"}}
              :prod {:resource-paths ["target/prod/resources"]
                     :sass {:target-path "target/prod/resources/public/css"}
                     :aot [backend.main]
@@ -49,8 +48,7 @@
          :output-style :compressed}
 
   :figwheel {:css-dirs ["target/dev/resources/public/css"]
-             :repl false
-             :server-port 3452}
+             :repl false}
 
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljc" "src/cljs" "../src/cljc" "../src/cljs"]
