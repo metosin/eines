@@ -105,7 +105,10 @@
 
 (defn connect! []
   (let [{:keys [url format on-message on-connect on-close on-error ping-interval]} @state
-        socket (js/WebSocket. (make-url url format))]
+        socket (try
+                 (js/WebSocket. (make-url url format))
+                 (catch js/Object e
+                   (on-error [:exception e])))]
     (set! (.-onopen socket) (fn [_]
                               (swap! state set-socket! socket ping! (or ping-interval 1000))
                               (on-connect)))
@@ -114,7 +117,7 @@
                                (on-close)))
     (set! (.-onerror socket) (fn [_]
                                (.close socket)
-                               (on-error)))
+                               (on-error [:on-error args])))
     (set! (.-onmessage socket) (fn [e]
                                  (handle-message e socket on-message)))))
 
