@@ -7,7 +7,9 @@
                          [metosin/eines-client "0.0.10-SNAPSHOT"]
                          [metosin/eines-immutant "0.0.10-SNAPSHOT"]
                          [metosin/eines-server "0.0.10-SNAPSHOT"]
+                         [metosin/eines-aleph "0.0.10-SNAPSHOT"]
 
+                         [aleph "0.4.5-alpha6"]
                          [com.cognitect/transit-cljs "0.8.243"]
                          [org.clojure/tools.logging "0.4.0"]
                          [com.cognitect/transit-clj "0.8.300"]
@@ -17,7 +19,8 @@
   :profiles {:dev {:source-paths ["modules/eines/src"
                                   "modules/eines-client/src"
                                   "modules/eines-immutant/src"
-                                  "modules/eines-server/src"]
+                                  "modules/eines-server/src"
+                                  "modules/eines-aleph/src"]
                    :dependencies [[metosin/eines]
                                   [org.clojure/clojure "1.9.0"]
                                   [org.clojure/clojurescript "1.9.946" :exclusions [com.google.code.findbugs/jsr305]]]
