@@ -1,8 +1,8 @@
-/target
+target
 /checkouts
 pom.xml
 pom.xml.asc
-/.lein-*
+.lein-*
 /.nrepl-*
 /*.iml
 /.idea
