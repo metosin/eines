@@ -31,7 +31,7 @@ for [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) comm
 
 ## License
 
-Copyright © 2017 Metosin Ltd.
+Copyright © 2017-2018 Metosin Ltd.
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
