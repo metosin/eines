@@ -3,6 +3,6 @@
 set -e
 
 # Modules
-for ext in eines-server eines-client eines-immutant eines; do
+for ext in eines-server eines-client eines-immutant eines-aleph eines; do
   cd modules/$ext; lein "$@"; cd ../..;
 done
