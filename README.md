@@ -9,7 +9,9 @@
 > https://en.wikipedia.org/wiki/Convenience_food
 
 Simple [Clojure](http://clojure.org) and [ClojureScript](https://clojurescript.org) library 
-for [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) communication. 
+for [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) communication.
+
+**Status:** Unfinished; not recommended for general usage.
 
 ## Goals
 
