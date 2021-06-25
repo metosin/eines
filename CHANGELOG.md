@@ -1,5 +1,15 @@
 # UNRELEASED
 
+* Updated deps:
+
+```clj
+[aleph "0.4.6"] is available but we use "0.4.5-alpha6"
+[com.cognitect/transit-cljs "0.8.264"] is available but we use "0.8.243"
+[org.clojure/tools.logging "1.1.0"] is available but we use "0.4.0"
+[com.cognitect/transit-clj "1.0.324"] is available but we use "0.8.300"
+[metosin/jsonista "0.2.7"] is available but we use "0.2.1"
+```
+
 # 0.0.9
 
 * Updated deps to most recent versions
